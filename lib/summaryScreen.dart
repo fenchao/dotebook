@@ -8,7 +8,7 @@ class SummaryScreen extends StatefulWidget {
 
 class _SummaryScreenState extends State<SummaryScreen> {
   String _title = '';
-  List<DoteParam> doteSummary = [];
+  List<DoteParam> doteSummary = []; // offload this to hardware memory in future
 
   Future<DoteParam> _getSubmitInfo(BuildContext context) async {
     final result = await Navigator.pushNamed(context, '/submit');
@@ -24,9 +24,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
         title: Text('Dote Summary'),
       ),
       body: Center (
-        child: Text(
-          doteSummary.isEmpty ? 'Empty Dote' :
-          doteSummary.elementAt(doteSummary.length-1).desc,
+        child:
+          doteSummary.isEmpty ? Text('Empty Dote', style: Theme.of(context).textTheme.display1) :
+        Text(
+          'Not empty',
           style: Theme.of(context).textTheme.display1,
         ),
       ),
@@ -34,7 +35,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
         onPressed: () {
           _getSubmitInfo(context).then((onValue) {
             setState(() {
-              doteSummary.add(onValue);
+              if (onValue != null)
+                doteSummary.add(onValue);
             });
           });
         },
