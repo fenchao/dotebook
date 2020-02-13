@@ -22,22 +22,25 @@ class SubmitForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView (
       children: <Widget>[
-        Text('Title'),
+        Text('Title', style: Theme.of(context).textTheme.display1),
         TextField (
           controller: _titleController,
         ),
-        Text('Price'),
+        Text('Price', style: Theme.of(context).textTheme.display1),
         TextField (
           controller: _priceController,
         ),
-        Text('Description'),
+        Text('Description', style: Theme.of(context).textTheme.display1),
         TextField (
           controller: _descController,
           keyboardType: TextInputType.multiline,
         ),
         RaisedButton (
           onPressed: () {
-            Navigator.pop(context, DoteParam(_titleController.text, _priceController.text, _descController.text));
+            Navigator.pop(context,
+                          DoteParam(_titleController.text,
+                                    _priceController.text,
+                                    _descController.text));
           },
           child: Text('Submit'),
         ),
