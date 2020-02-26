@@ -2,21 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:dotebook/homeScreen.dart';
 import 'package:dotebook/submitScreen.dart';
 import 'package:dotebook/summaryScreen.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:camera/camera.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  // Ensure that plugin services are initialized so that `availableCameras()`
+  // can be called before `runApp()`
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/': (context) => HomeScreen(),
-        '/submit': (context) => SubmitScreen(),
-        '/summary': (context) => SummaryScreen(),
-      },
-    );
-  }
+  // Obtain a list of the available cameras on the device.
+  final cameras = await availableCameras();
+
+  // Get a specific camera from the list of available cameras.
+  final firstCamera = cameras.first;
+
+  runApp(
+      MaterialApp(
+        initialRoute: '/',
+        routes: {
+          '/': (context) => HomeScreen(),
+          '/submit': (context) => SubmitScreen(camera: firstCamera,),
+          '/summary': (context) => SummaryScreen(),
+        },
+      )
+  );
 }
 

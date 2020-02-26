@@ -1,14 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:dotebook/util.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 class SummaryScreen extends StatefulWidget {
   @override
-  _SummaryScreenState createState() => _SummaryScreenState();
+  SummaryScreenState createState() => SummaryScreenState();
 }
 
-class _SummaryScreenState extends State<SummaryScreen> {
+class SummaryScreenState extends State<SummaryScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  static List<DoteParam> doteSummary = []; // offload this to hardware memory in future
 
   Future<DoteParam> _getSubmitInfo(BuildContext context) async {
     final result = await Navigator.pushNamed(context, '/submit');
@@ -26,14 +29,23 @@ class _SummaryScreenState extends State<SummaryScreen> {
       ),
       body: Center (
         child:
-          doteSummary.isEmpty ? Text('Empty Dote', style: Theme.of(context).textTheme.display1) :
+          Global.doteSummary.isEmpty ? Text('Empty Dote', style: Theme.of(context).textTheme.display1) :
           ListView.builder(
-              itemCount: doteSummary.length,
+              itemCount: Global.doteSummary.length,
               itemBuilder: (BuildContext ctxt, int index) {
-                DoteParam p = doteSummary.elementAt(index);
+                DoteParam p = Global.doteSummary.elementAt(index);
                 return Card (
-                  child: Text('\$'+p.price+' : '+p.title+'\n'+p.desc,
-                      style: Theme.of(context).textTheme.display1),
+                  child: 
+                    Row(
+                      children: <Widget>[
+                        Image.asset(Global.getPath(index, false),
+                            height: 100,),
+                        Container(
+                          child:Text('\$'+p.price+' : '+p.title+'\n'+p.desc,
+                              style: Theme.of(context).textTheme.display1),
+                        ),
+                      ],
+                    ),
                 );
               }
           ),
@@ -48,7 +60,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 _scaffoldKey.currentState.showSnackBar(snackBar);
                 if (onValue.isValid()) {
                   setState(() {
-                    doteSummary.add(onValue);
+                    Global.doteSummary.add(onValue);
                   });
                 }
               }
