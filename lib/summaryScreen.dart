@@ -38,7 +38,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                   child: 
                     Row(
                       children: <Widget>[
-                        Image.asset(Global.getPath(index, false),
+                        Image.file(File(Global.getPath(index, false)),
                             height: 100,),
                         Container(
                           child:Text('\$'+p.price+' : '+p.title+'\n'+p.desc,

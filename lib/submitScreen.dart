@@ -77,7 +77,7 @@ class SubmitScreenState extends State<SubmitScreen> {
   );
 
   Widget _buildButton(int picIdx) => FlatButton(
-    child: path[picIdx] == null ? Icon(Icons.camera_alt) : Image.asset(path[picIdx]),
+    child: path[picIdx] == null ? Icon(Icons.camera_alt) : Image.file(File(path[picIdx])),
     onPressed: () async {
       if (path[picIdx] != null) {
         return;
