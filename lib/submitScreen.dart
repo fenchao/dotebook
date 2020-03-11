@@ -35,6 +35,15 @@ class SubmitScreenState extends State<SubmitScreen> {
 
 //  BuildContext gContext;
 
+  // GoogleMap Start
+  GoogleMapController mapController;
+  //37.399757, -122.043515
+  final LatLng _center = const LatLng(0, 0);
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+  // GoogleMap End
+
   @override
   void initState() {
     super.initState();
@@ -155,10 +164,23 @@ class SubmitScreenState extends State<SubmitScreen> {
             keyboardType: TextInputType.multiline,
           ),
           _buildImageColumn(),
+          SizedBox (
+            width: 200,
+            height: 160,
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              mapType: MapType.normal,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 15.0,
+              ),
+            ),
+          ),
           RaisedButton (
             onPressed: () {
 //              gContext = context;
               _showNotificationWithoutSound();
+//              mapController.getLatLng(screenCoordinate)
               final param = DoteParam(_titleController.text,_priceController.text,_descController.text);
               Navigator.pop(context,
                   param);
