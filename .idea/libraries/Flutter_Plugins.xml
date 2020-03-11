@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../MyApp/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-1.6.1" />
       <root url="file://$PROJECT_DIR$/../MyApp/flutter/.pub-cache/hosted/pub.dartlang.org/camera-0.5.7+4" />
+      <root url="file://$PROJECT_DIR$/../MyApp/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-1.2.0+4" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

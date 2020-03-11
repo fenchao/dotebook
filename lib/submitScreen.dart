@@ -1,11 +1,11 @@
 import 'dart:io';
-
 import 'package:dotebook/summaryScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:dotebook/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class SubmitScreen extends StatefulWidget {
   final CameraDescription camera;
@@ -30,6 +30,10 @@ class SubmitScreenState extends State<SubmitScreen> {
   CameraController _controller;
   Future<void> _initializeControllerFuture;
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+//  BuildContext gContext;
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +44,40 @@ class SubmitScreenState extends State<SubmitScreen> {
       widget.camera,
       // Define the resolution to use.
       ResolutionPreset.medium,
+
     );
 
     // Next, initialize the controller. This returns a Future.
     _initializeControllerFuture = _controller.initialize();
+
+    // NOTIFICATION
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: mySelectNotification);
+  }
+
+  Future _showNotificationWithoutSound() async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        playSound: false, importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics =
+    new IOSNotificationDetails(presentSound: false);
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'New Post',
+      'Entry added to dotebook.',
+      platformChannelSpecifics,
+      payload: 'No_Sound',
+    );
   }
 
   @override
@@ -122,6 +156,8 @@ class SubmitScreenState extends State<SubmitScreen> {
           _buildImageColumn(),
           RaisedButton (
             onPressed: () {
+//              gContext = context;
+              _showNotificationWithoutSound();
               final param = DoteParam(_titleController.text,_priceController.text,_descController.text);
               Navigator.pop(context,
                   param);
@@ -130,6 +166,19 @@ class SubmitScreenState extends State<SubmitScreen> {
           ),
         ],
       ),
+    );
+  }
+
+
+  Future mySelectNotification(String payload) async {
+    showDialog(
+//      context: gContext, // to be fixed
+      builder: (_) {
+        return new AlertDialog(
+          title: Text("PayLoad"),
+          content: Text("Payload : $payload"),
+        );
+      },
     );
   }
 }
