@@ -7,13 +7,16 @@ import 'package:path/path.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class SubmitScreen extends StatefulWidget {
   final CameraDescription camera;
+  final LocationData location;
 
   const SubmitScreen({
     Key key,
     @required this.camera,
+    @required this.location,
   }) : super(key: key);
 
   SubmitScreenState createState() => SubmitScreenState();
@@ -33,12 +36,13 @@ class SubmitScreenState extends State<SubmitScreen> {
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-//  BuildContext gContext;
+  final Map<String, Marker> _markers = {};
 
   // GoogleMap Start
   GoogleMapController mapController;
   //37.399757, -122.043515
-  final LatLng _center = const LatLng(0, 0);
+  LatLng _center = LatLng(37.399757, -122.043515);
+  LatLng _userLocation;
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
@@ -60,6 +64,10 @@ class SubmitScreenState extends State<SubmitScreen> {
     // Next, initialize the controller. This returns a Future.
     _initializeControllerFuture = _controller.initialize();
 
+    // Location Service
+    _getLocation();
+    _getMarker();
+
     // NOTIFICATION
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
@@ -71,6 +79,24 @@ class SubmitScreenState extends State<SubmitScreen> {
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: mySelectNotification);
+  }
+
+  void _getLocation() async {
+    try {
+      _userLocation = LatLng(widget.location.latitude, widget.location.longitude);
+    } catch (e) {
+      _userLocation = null;
+    }
+  }
+
+  void _getMarker() {
+    _markers.clear();
+    final marker = Marker(
+      markerId: MarkerId("curr_loc"),
+      position: _userLocation == null ? _center : LatLng(_userLocation.latitude, _userLocation.longitude),
+      infoWindow: InfoWindow(title: 'Your Location'),
+    );
+    _markers["Current Location"] = marker;
   }
 
   Future _showNotificationWithoutSound() async {
@@ -171,17 +197,20 @@ class SubmitScreenState extends State<SubmitScreen> {
               onMapCreated: _onMapCreated,
               mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
-                target: _center,
+                target: _userLocation == null ? _center : _userLocation,
                 zoom: 15.0,
               ),
+              markers: _markers.values.toSet(),
             ),
           ),
           RaisedButton (
             onPressed: () {
-//              gContext = context;
               _showNotificationWithoutSound();
-//              mapController.getLatLng(screenCoordinate)
-              final param = DoteParam(_titleController.text,_priceController.text,_descController.text);
+              final param = DoteParam(_titleController.text,
+                                      _priceController.text,
+                                      _descController.text,
+                                      _userLocation.latitude,
+                                      _userLocation.longitude);
               Navigator.pop(context,
                   param);
             },
@@ -195,7 +224,6 @@ class SubmitScreenState extends State<SubmitScreen> {
 
   Future mySelectNotification(String payload) async {
     showDialog(
-//      context: gContext, // to be fixed
       builder: (_) {
         return new AlertDialog(
           title: Text("PayLoad"),

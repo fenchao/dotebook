@@ -1,11 +1,11 @@
-import 'dart:math';
-
 class DoteParam {
   final String title;
   final String price;
   final String desc;
+  final double latitude;
+  final double longitude;
 
-  DoteParam(this.title, this.price, this.desc);
+  DoteParam(this.title, this.price, this.desc, this.latitude, this.longitude);
 
   bool isValid() {
     bool isNumeric = true;
@@ -20,7 +20,7 @@ class DoteParam {
 
 class Global {
   static List<DoteParam> doteSummary = []; // offload this to hardware memory in future
-  static String path = null;
+  static String path;
   static String getPath(int pidx, bool add) {
     if (add) {
       return path+Global.doteSummary.length.toString()+
